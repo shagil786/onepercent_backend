@@ -51,13 +51,12 @@ router.post("/signup", upload.single("profileImage"), async (req, res) => {
       secret,
       { expiresIn: "1d" },
     );
-    res
-      .status(200)
-      .send({
-        user: user.email,
-        presignedUrl: user.presignedUrl,
-        token: token,
-      });
+    res.status(200).send({
+      user: user.email,
+      presignedUrl: user.presignedUrl,
+      token: token,
+      userId: user?._id,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Failed to register user" });
@@ -83,13 +82,12 @@ router.post("/login", async (req, res) => {
         secret,
         { expiresIn: "1d" },
       );
-      res
-        .status(200)
-        .send({
-          user: user.email,
-          presignedUrl: user.presignedUrl,
-          token: token,
-        });
+      res.status(200).send({
+        user: user.email,
+        presignedUrl: user.presignedUrl,
+        token: token,
+        userId: user?._id,
+      });
     } else {
       res.status(400).send("Invalid credentials");
     }

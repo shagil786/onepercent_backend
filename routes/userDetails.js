@@ -12,9 +12,10 @@ const toDate = (dateString) => {
   return formattedDate;
 };
 
-router.post("/addTask", async (req, res) => {
-  const { name, description, status, priority, startDate, endDate, userId } =
-    req.body;
+router.post("/addTask/:userId", async (req, res) => {
+  const { name, description, status, priority, startDate, endDate } = req.body;
+
+  const userId = req.params.userId;
 
   if (!name || !description || !startDate || !endDate || !userId) {
     return res.status(400).json({ message: "Missing required fields" });
@@ -42,9 +43,9 @@ router.post("/addTask", async (req, res) => {
   }
 });
 
-router.get("/allTask", async (req, res) => {
+router.get("/allTask/:userId", async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.params.userId;
     const filter = req?.query?.filter ? req?.query?.filter : "priority";
     const sortDirection = req?.query?.sortDirection
       ? req?.query?.sortDirection
@@ -218,9 +219,14 @@ router.delete("/task/:taskId", async (req, res) => {
   }
 });
 
-router.get("/tasks/count", async (req, res) => {
+router.get("/tasks/count/:userId", async (req, res) => {
   try {
+    const userId = req.params.userId;
+    const matchStage = {
+      $match: { user: new mongoose.Types.ObjectId(userId) },
+    };
     const counts = await Task.aggregate([
+      matchStage,
       {
         $group: {
           _id: "$status",
@@ -247,7 +253,9 @@ router.get("/tasks/count", async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    res.status(500).json({ success: false, error: "Failed to delete task" });
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to retrieve task counts" });
   }
 });
 
