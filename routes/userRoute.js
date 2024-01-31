@@ -24,7 +24,7 @@ router.post("/signup", upload.single("profileImage"), async (req, res) => {
 
     if (req.file) {
       const s3Params = {
-        Bucket: "yourownbucket",
+        Bucket: "yourownbucket007",
         Key: `${Date.now()}-${req.file?.originalname}`,
         Body: req.file.buffer,
         ACL: "public-read",
